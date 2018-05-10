@@ -171,10 +171,10 @@ function readDocFile(auth, fileId) {
          
             
           }
-             for(var n=0;n<arr.length;n++){
-              console.log("!!!!!!!!!!!!!!!!!!!!!");
-            console.log(ins[n].sentence);
-          }
+          //    for(var n=0;n<arr.length;n++){
+          //     console.log("!!!!!!!!!!!!!!!!!!!!!");
+          //   console.log(ins[n].sentence);
+          // }
 
           //  dbs.collection("demo").findOne({ "sentence" : "Significant differences begin to appear only when we cross the threshold of 150 individuals,"}).then(function(doc) {
           //    if(!doc)
@@ -194,17 +194,35 @@ function readDocFile(auth, fileId) {
              //    // otherwise, do something with the item
              //       });updateMany(ins, {upsert: true,safe: false}
 
+             var bulkUpdateOps = ins.map(function(doc) {
+              console.log(doc)
+                  return {
+                      "updateOne": {
+                          "filter": { "sentence": doc.sentence },
+                          "update": { "$set": { "sentence": doc.sentence } },
+                          "upsert": true
+                      }
+                  };
+              });
+              dbs.collection("test").bulkWrite(bulkUpdateOps, function(err, r) {
+                  if(err){                    
+                    console.log('errrrrrrrrrrrrrrrrrrrrrrrrr')
+                  }else{
+                  console.log("inserted");
+                  process.exit(0);
+                }
+              })
 
-           console.log("____________________"); 
-          dbs.collection("test").updateMany(ins, {upsert: true},(err,dat)=>{
-            if(err){
-              console.log(err);
-            }
-            else{
+          //  console.log("____________________"); 
+          // dbs.collection("test").updateMany(ins, {upsert: true},(err,dat)=>{
+          //   if(err){
+          //     console.log(err);
+          //   }
+          //   else{
             
-           console.log("inserted");
-            }
-          });
+          //  console.log("inserted");
+          //   }
+          // });
 
          
 
@@ -212,8 +230,7 @@ function readDocFile(auth, fileId) {
          
        //
          //   console.log(data.config.data);
-            console.log("DONE");
-            process.exit(0);
+            console.log("DONE");            
           });
         });
       }  
